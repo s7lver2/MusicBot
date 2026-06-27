@@ -52,8 +52,16 @@ public class PlayerManager extends DefaultAudioPlayerManager
         YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true);
         yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
         String oauthToken = bot.getConfig().getYoutubeOAuthToken();
-        if (oauthToken != null && !oauthToken.isEmpty()) {
-            yt.useOauth2(oauthToken, false);
+        if (oauthToken != null && !oauthToken.isEmpty())
+        {
+            if (oauthToken.equalsIgnoreCase("GENERATE"))
+                // First-time setup: trigger the device-code OAuth flow. The activation
+                // URL, and then the refresh token once you authorize, are printed to the
+                // logs. Copy that refresh token back into youtubeOAuthToken to persist it.
+                yt.useOauth2(null, false);
+            else
+                // Use an existing refresh token (skip the interactive flow).
+                yt.useOauth2(oauthToken, true);
         }
         registerSourceManager(yt);
 
