@@ -30,7 +30,6 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
-import dev.lavalink.youtube.clients.Android;
 import dev.lavalink.youtube.clients.AndroidVr;
 import dev.lavalink.youtube.clients.Ios;
 import dev.lavalink.youtube.clients.Music;
@@ -62,11 +61,12 @@ public class PlayerManager extends DefaultAudioPlayerManager
         // (WEB/MWEB/TVHTML5) rely on deciphering YouTube's base.js "signature" function,
         // which the library currently cannot parse for YouTube's latest player script
         // ("must find sig function") - this breaks playback on every release/snapshot.
-        // The iOS/Android clients return stream URLs that don't require the JS cipher,
-        // so they keep playback working; TV is kept for authenticated (OAuth) playback,
-        // and Music/Web for search, metadata and playlists.
+        // The iOS / Android-VR clients return stream URLs that don't require the JS
+        // cipher, so they keep playback working; TV is kept for authenticated (OAuth)
+        // playback, and Music/Web for search, metadata and playlists. (The plain ANDROID
+        // client is intentionally omitted - youtube-source reports it as broken.)
         YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true,
-                new Music(), new Web(), new Ios(), new AndroidVr(), new Android(), new Tv());
+                new Music(), new Web(), new Ios(), new AndroidVr(), new Tv());
         yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
         if (useOauth)
         {
