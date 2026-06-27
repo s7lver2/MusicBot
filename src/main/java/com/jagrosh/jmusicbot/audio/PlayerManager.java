@@ -30,6 +30,12 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.clients.Android;
+import dev.lavalink.youtube.clients.AndroidVr;
+import dev.lavalink.youtube.clients.Ios;
+import dev.lavalink.youtube.clients.Music;
+import dev.lavalink.youtube.clients.Tv;
+import dev.lavalink.youtube.clients.Web;
 import net.dv8tion.jda.api.entities.Guild;
 
 /**
@@ -49,10 +55,20 @@ public class PlayerManager extends DefaultAudioPlayerManager
     {
         TransformativeAudioSourceManager.createTransforms(bot.getConfig().getTransforms()).forEach(t -> registerSourceManager(t));
 
-        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true);
-        yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
         String oauthToken = bot.getConfig().getYoutubeOAuthToken();
-        if (oauthToken != null && !oauthToken.isEmpty())
+        boolean useOauth = oauthToken != null && !oauthToken.isEmpty();
+
+        // Register an explicit client set. youtube-source's default web-based clients
+        // (WEB/MWEB/TVHTML5) rely on deciphering YouTube's base.js "signature" function,
+        // which the library currently cannot parse for YouTube's latest player script
+        // ("must find sig function") - this breaks playback on every release/snapshot.
+        // The iOS/Android clients return stream URLs that don't require the JS cipher,
+        // so they keep playback working; TV is kept for authenticated (OAuth) playback,
+        // and Music/Web for search, metadata and playlists.
+        YoutubeAudioSourceManager yt = new YoutubeAudioSourceManager(true,
+                new Music(), new Web(), new Ios(), new AndroidVr(), new Android(), new Tv());
+        yt.setPlaylistPageCount(bot.getConfig().getMaxYTPlaylistPages());
+        if (useOauth)
         {
             if (oauthToken.equalsIgnoreCase("GENERATE"))
                 // First-time setup: trigger the device-code OAuth flow. The activation

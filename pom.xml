@@ -35,6 +35,15 @@
             <name>Lavalink Repository</name>
             <url>https://maven.lavalink.dev/releases</url>
         </repository>
+        <repository>
+            <id>lavalink-snapshots</id>
+            <name>Lavalink Snapshots</name>
+            <url>https://maven.lavalink.dev/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -80,7 +89,10 @@
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>common</artifactId>
-            <version>1.18.1</version>
+            <!-- Latest release 1.18.1 can no longer parse YouTube's current base.js
+                 ("must find sig function"). Using the newest main-branch snapshot,
+                 which carries the updated signature-cipher extraction. -->
+            <version>9d4dbeeb51f16d53078486d69d27654d4acfa7fb-SNAPSHOT</version>
         </dependency>
 	<dependency>
 	    <groupId>com.github.jagrosh</groupId>
